@@ -1,0 +1,26 @@
+{
+  "name": "blender-3d-viewer",
+  "version": "1.0.0",
+  "description": "ウェブブラウザで動作するBlender用3Dモデルビューワー",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "3d",
+    "blender",
+    "threejs",
+    "viewer",
+    "webgl"
+  ],
+  "author": "Antigravity System",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

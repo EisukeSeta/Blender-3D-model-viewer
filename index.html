@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blender用3Dモデルをブラウザで表示・操作できるインタラクティブビューワー">
+    <title>Blender 3D Model Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <!-- メインコンテナ -->
+    <div class="app-container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <h1 class="logo-text">Blender 3D Viewer</h1>
+            </div>
+            <div class="header-info">
+                <span class="format-badge">glTF</span>
+                <span class="format-badge">STL</span>
+                <span class="format-badge">OBJ</span>
+                <span class="format-badge">FBX</span>
+            </div>
+        </header>
+
+        <!-- 3Dキャンバスエリア -->
+        <div class="canvas-container">
+            <canvas id="canvas3d"></canvas>
+
+            <!-- ファイルドロップオーバーレイ -->
+            <div id="dropZone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <div class="upload-icon">📦</div>
+                    <h2 class="drop-zone-title">3Dモデルをドロップ</h2>
+                    <p class="drop-zone-subtitle">または</p>
+                    <label for="fileInput" class="file-select-btn">
+                        ファイルを選択
+                        <input type="file" id="fileInput" accept=".glb,.gltf,.stl,.obj,.fbx" hidden>
+                    </label>
+                    <p class="supported-formats">対応形式: GLB, GLTF, STL, OBJ, FBX</p>
+                </div>
+            </div>
+
+            <!-- ローディングインジケーター -->
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
+                <p>モデルを読み込み中...</p>
+            </div>
+        </div>
+
+        <!-- コントロールパネル -->
+        <div class="control-panel">
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="control-icon">☀️</span>
+                    <span>ライト強度</span>
+                </label>
+                <input type="range" id="lightIntensity" class="slider" min="0" max="200" value="100">
+                <span id="lightValue" class="control-value">100%</span>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="control-icon">🎨</span>
+                    <span>背景色</span>
+                </label>
+                <input type="color" id="bgColor" class="color-picker" value="#0a0e1a">
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="control-icon">📐</span>
+                    <span>ワイヤーフレーム</span>
+                </label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="wireframeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <button id="resetView" class="reset-btn">
+                    <span>🔄</span>
+                    <span>ビューをリセット</span>
+                </button>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="control-icon">📐</span>
+                    <span>平面ビュー</span>
+                </label>
+                <div class="view-buttons">
+                    <button id="viewXY" class="view-btn" title="XY平面（上から）">XY</button>
+                    <button id="viewYZ" class="view-btn" title="YZ平面（横から）">YZ</button>
+                    <button id="viewZX" class="view-btn" title="ZX平面（正面から）">ZX</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="control-icon">📁</span>
+                    <span>読み込みモード</span>
+                </label>
+                <div class="load-mode-buttons">
+                    <label class="radio-btn">
+                        <input type="radio" name="loadMode" value="replace" checked>
+                        <span>置き換え</span>
+                    </label>
+                    <label class="radio-btn">
+                        <input type="radio" name="loadMode" value="add">
+                        <span>追加</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- パネル表示ボタン -->
+            <div class="control-group">
+                <button id="lightSettingsBtn" class="settings-btn">💡 光源設定</button>
+                <button id="showTransformPanelBtn" class="settings-btn hidden">📐 トランスフォーム</button>
+            </div>
+        </div>
+
+        <!-- 光源設定パネル -->
+        <div id="lightPanel" class="light-panel floating-panel hidden">
+            <div class="panel-header">
+                <h4 class="panel-title">光源設定</h4>
+                <button id="closeLightBtn" class="panel-close-btn">×</button>
+            </div>
+
+            <!-- 光源位置 -->
+            <div class="transform-group">
+                <label class="transform-label">光源位置</label>
+                <div class="xyz-inputs">
+                    <div class="input-wrapper">
+                        <label class="axis-label">X (左右)</label>
+                        <input type="number" id="lightPosX" step="1" value="5" placeholder="X">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Y (上下)</label>
+                        <input type="number" id="lightPosY" step="1" value="10" placeholder="Y">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Z (前後)</label>
+                        <input type="number" id="lightPosZ" step="1" value="5" placeholder="Z">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 光源色 -->
+            <div class="transform-group">
+                <label class="transform-label">光源色</label>
+                <input type="color" id="lightColor" class="color-picker" value="#ffffff">
+            </div>
+        </div>
+
+        <!-- サイドバー（モデルリスト） -->
+        <aside class="sidebar">
+            <h3 class="sidebar-title">モデルリスト</h3>
+            <ul id="modelList" class="model-list">
+                <!-- 動的に生成 -->
+            </ul>
+            <div class="sidebar-actions">
+                <button id="clearAllBtn" class="danger-btn">すべてクリア</button>
+            </div>
+        </aside>
+
+        <!-- トランスフォームパネル -->
+        <div id="transformPanel" class="transform-panel floating-panel hidden">
+            <div class="panel-header">
+                <h4 id="selectedModelName" class="panel-title">モデル名</h4>
+                <button id="closeTransformBtn" class="panel-close-btn">×</button>
+            </div>
+
+            <!-- 位置 -->
+            <div class="transform-group">
+                <label class="transform-label">位置</label>
+                <div class="xyz-inputs">
+                    <div class="input-wrapper">
+                        <label class="axis-label">X (左右)</label>
+                        <input type="number" id="posX" step="0.1" placeholder="X">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Y (上下)</label>
+                        <input type="number" id="posY" step="0.1" placeholder="Y">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Z (前後)</label>
+                        <input type="number" id="posZ" step="0.1" placeholder="Z">
+                    </div>
+                </div>
+            </div>
+
+            <!-- スケール -->
+            <div class="transform-group">
+                <label class="transform-label">スケール</label>
+                <div class="xyz-inputs">
+                    <div class="input-wrapper">
+                        <label class="axis-label">X (幅)</label>
+                        <input type="number" id="scaleX" step="0.1" value="1" min="0.01" placeholder="X">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Y (高さ)</label>
+                        <input type="number" id="scaleY" step="0.1" value="1" min="0.01" placeholder="Y">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Z (奥行)</label>
+                        <input type="number" id="scaleZ" step="0.1" value="1" min="0.01" placeholder="Z">
+                    </div>
+                </div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="uniformScale" checked>
+                    <span>均等スケール</span>
+                </label>
+            </div>
+
+            <!-- 回転 -->
+            <div class="transform-group">
+                <label class="transform-label">回転（度）</label>
+                <div class="xyz-inputs">
+                    <div class="input-wrapper">
+                        <label class="axis-label">X (前後)</label>
+                        <input type="number" id="rotX" step="1" value="0" placeholder="X">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Y (左右)</label>
+                        <input type="number" id="rotY" step="1" value="0" placeholder="Y">
+                    </div>
+                    <div class="input-wrapper">
+                        <label class="axis-label">Z (回転)</label>
+                        <input type="number" id="rotZ" step="1" value="0" placeholder="Z">
+                    </div>
+                </div>
+            </div>
+
+            <!-- アクション -->
+            <div class="transform-actions">
+                <button id="loadModelBtn" class="primary-btn">読み込み</button>
+                <button id="duplicateModelBtn" class="secondary-btn">複製</button>
+                <button id="deleteModelBtn" class="danger-btn">削除</button>
+            </div>
+        </div>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <p>&copy; 2026 Antigravity System | Advanced 3D Visualization</p>
+        </footer>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+
+</html>

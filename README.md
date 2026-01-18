@@ -4,13 +4,14 @@
 
 ![Blender 3D Model Viewer](https://img.shields.io/badge/Three.js-v0.160.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Deploy to S3](https://github.com/EisukeSeta/Blender-3D-model-viewer/actions/workflows/deploy.yml/badge.svg)
 
 ## 🌐 ライブデモ
 
 **[https://www.seta.mydns.jp/3D-viewer/](https://www.seta.mydns.jp/3D-viewer/)** 🚀
 
 AWS S3で静的ホスティング中。ブラウザで直接アクセスして3Dモデルビューアーを体験できます！  
-GitHub Actionsによる自動デプロイで常に最新版を公開しています。
+**GitHub Actionsによる自動デプロイで常に最新版を公開しています。** mainブランチへのpush時に自動的にビルド&デプロイされます。
 
 ## 🎯 主な機能
 
@@ -118,14 +119,18 @@ npm run dev
 
 ```
 3d-viewer/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml  # GitHub Actions自動デプロイワークフロー
 ├── index.html          # メインHTMLファイル
 ├── main.js             # アプリケーションロジック
 ├── style.css           # スタイルシート
 ├── package.json        # 依存関係
 ├── vite.config.js      # Vite設定（S3デプロイ用base設定含む）
-├── deploy.ps1          # 3D Viewerデプロイスクリプト
-├── deploy-root.ps1     # ルートページデプロイスクリプト
-├── DEPLOYMENT.md       # デプロイガイド
+├── deploy.ps1          # 3D Viewerデプロイスクリプト（手動用）
+├── deploy-root.ps1     # ルートページデプロイスクリプト（手動用）
+├── DEPLOYMENT.md       # S3デプロイ詳細ガイド
+├── GITHUB_ACTIONS.md   # GitHub Actions自動デプロイ設定ガイド
 ├── samples/            # サンプルモデル
 │   └── Duck.glb
 └── README.md           # このファイル

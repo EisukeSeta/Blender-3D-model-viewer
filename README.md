@@ -7,7 +7,7 @@
 
 ## 🌐 ライブデモ
 
-**[https://www.seta.mydns.jp/3D-viewer/](https://www.seta.mydns.jp/3D-viewer/)**
+**[https://www.seta.mydns.jp/3D-viewer/](https://www.seta.mydns.jp/3D-viewer/)** 🚀
 
 AWS S3で静的ホスティング中。ブラウザで直接アクセスして3Dモデルビューアーを体験できます！  
 GitHub Actionsによる自動デプロイで常に最新版を公開しています。

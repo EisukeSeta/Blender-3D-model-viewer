@@ -5,6 +5,12 @@
 ![Blender 3D Model Viewer](https://img.shields.io/badge/Three.js-v0.160.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## 🌐 ライブデモ
+
+**[https://www.seta.mydns.jp/3D-viewer/](https://www.seta.mydns.jp/3D-viewer/)**
+
+AWS S3で静的ホスティング中。ブラウザで直接アクセスして3Dモデルビューアーを体験できます！
+
 ## 🎯 主な機能
 
 ### 📦 モデル管理
@@ -115,11 +121,39 @@ npm run dev
 ├── main.js             # アプリケーションロジック
 ├── style.css           # スタイルシート
 ├── package.json        # 依存関係
-├── vite.config.js      # Vite設定
+├── vite.config.js      # Vite設定（S3デプロイ用base設定含む）
+├── deploy.ps1          # 3D Viewerデプロイスクリプト
+├── deploy-root.ps1     # ルートページデプロイスクリプト
+├── DEPLOYMENT.md       # デプロイガイド
 ├── samples/            # サンプルモデル
 │   └── Duck.glb
 └── README.md           # このファイル
 ```
+
+## ☁️ AWS S3デプロイ
+
+このアプリケーションはAWS S3で静的ホスティング可能です。
+
+### クイックデプロイ
+
+```powershell
+# ビルド & S3アップロード
+.\deploy.ps1
+```
+
+### デプロイ先
+- **S3バケット**: `s3://www.seta.mydns.jp/3D-viewer/`
+- **公開URL**: https://www.seta.mydns.jp/3D-viewer/
+
+### 詳細情報
+
+デプロイの詳細については、[DEPLOYMENT.md](DEPLOYMENT.md)を参照してください。以下の内容が含まれます:
+
+- S3バケット設定方法
+- CORS設定
+- CloudFront統合
+- GitHub Actions自動デプロイ
+- トラブルシューティング
 
 ## 🎨 UI/UX の特徴
 

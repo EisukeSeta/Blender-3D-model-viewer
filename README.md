@@ -134,12 +134,22 @@ npm run dev
 
 このアプリケーションはAWS S3で静的ホスティング可能です。
 
-### クイックデプロイ
+### 手動デプロイ
 
 ```powershell
 # ビルド & S3アップロード
 .\deploy.ps1
 ```
+
+### 自動デプロイ (GitHub Actions)
+
+mainブランチにpushすると、自動的にビルド&デプロイが実行されます:
+
+```bash
+git push origin main
+```
+
+**セットアップ方法**: [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)を参照
 
 ### デプロイ先
 - **S3バケット**: `s3://www.seta.mydns.jp/3D-viewer/`
@@ -147,13 +157,19 @@ npm run dev
 
 ### 詳細情報
 
-デプロイの詳細については、[DEPLOYMENT.md](DEPLOYMENT.md)を参照してください。以下の内容が含まれます:
+デプロイの詳細については、以下のドキュメントを参照してください:
 
-- S3バケット設定方法
-- CORS設定
-- CloudFront統合
-- GitHub Actions自動デプロイ
-- トラブルシューティング
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - S3デプロイの詳細ガイド
+  - S3バケット設定方法
+  - CORS設定
+  - CloudFront統合
+  - トラブルシューティング
+
+- **[GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)** - GitHub Actions自動デプロイ設定
+  - IAMユーザー作成
+  - GitHub Secrets設定
+  - ワークフロー設定
+  - トラブルシューティング
 
 ## 🎨 UI/UX の特徴
 
